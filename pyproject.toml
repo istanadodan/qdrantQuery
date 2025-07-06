@@ -1,0 +1,15 @@
+[project]
+name = "qdrantdb"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "bs4>=0.0.2",
+    "markdown>=3.8.2",
+    "openai>=1.93.0",
+    "pymupdf>=1.26.3",
+    "qdrant-client>=1.14.3",
+    "streamlit>=1.46.1",
+    "streamlit-openai>=0.1.4",
+]
