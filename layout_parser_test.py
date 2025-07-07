@@ -108,7 +108,7 @@ def getPDFJson(file_path: str) -> list[dict]:
     url = "https://api.upstage.ai/v1/document-digitization"
     headers = {"Authorization": f"Bearer {api_key}"}
     files = {"document": open(file_path, "rb")}
-    data = {"ocr": "false", "base64_encoding": "['table']", "model": "document-parse"}
+    data = {"ocr": "force", "base64_encoding": "['table']", "model": "document-parse"}
     response = requests.post(url, headers=headers, files=files, data=data)
 
     return [
