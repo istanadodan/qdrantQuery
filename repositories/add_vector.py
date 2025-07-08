@@ -1,5 +1,5 @@
 from qdrant_client.models import PointStruct
-from query import client
+from services.query import client
 
 collection_name = "test_collection"
 
