@@ -4,7 +4,6 @@ from dataclasses import dataclass
 import io
 from PIL import Image
 import fitz  # pyMuPDF
-from bs4 import BeautifulSoup
 
 # from markdown import markdownify as markdown
 
@@ -64,7 +63,7 @@ def capture_pdf_region(
     # - 이미지 포맷 선택 옵션 추가 가능
     """
 
-    filename = f"{output_path}_{page_number}_{id:2d}.png"
+    filename = Path(output_path) / f"capture_{page_number}_{id:2d}.png"
 
     try:
         width, height = page.rect.width, page.rect.height
@@ -127,10 +126,16 @@ def getPDFJson(file_path: str) -> list[dict]:
 
 # 호출 예시
 if __name__ == "__main__":
-    # 실제 파일 경로, 페이지, 좌표, 저장 경로를 지정해야 함
-    pdf_path = "docs/sample-report.pdf"
-    output_path = "output/capture"
+    import os
 
+    # 실제 파일 경로, 페이지, 좌표, 저장 경로를 지정해야 함
+    pdf_path = "mnt/docs/sample-report.pdf"
+
+    # 출력 폴더
+    output_path = "mnt/docs/output"
+    os.makedirs(output_path, exist_ok=True)
+
+    # 파일 읽어들임
     doc = fitz.open(pdf_path)
 
     elements: list[dict] = getPDFJson(pdf_path)

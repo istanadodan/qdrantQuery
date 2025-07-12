@@ -21,7 +21,7 @@ async def get_db():
     try:
         yield db
     except SQLAlchemyError as e:
-        db.rollback()
+        await db.rollback()
         raise SQLAlchemyError(e)
     finally:
-        db.close()
+        await db.close()

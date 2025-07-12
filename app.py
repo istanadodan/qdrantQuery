@@ -1,41 +1,36 @@
-from fastapi.responses import JSONResponse, Response
 import uvicorn
-from fastapi.staticfiles import StaticFiles
-from fastapi import Request, FastAPI, status
-
-
-# from api.v1.mw import CreateAppContext, LogRequestMiddleware, TimeoutMonitor
-from api.v1 import api_route
 from dotenv import load_dotenv
-from core.loggings import setup_logging, logging
-from core.middlewares import logging_handler, cors_handler
-import os
+from core.logging import setup_logging, logging
 
 load_dotenv()
 
 # 로깅 설정
 setup_logging()
 
-
-# from service.llm_search import agent
 logger = logging.getLogger(__name__)
 
 
 def create_app():
+    from fastapi import FastAPI
+    from fastapi.responses import JSONResponse
+    from fastapi.staticfiles import StaticFiles
+    from core.middleware import logging_handler, cors_handler
+    from api.v1 import api_route
+
     # app설정
-    app = FastAPI()
+    app = FastAPI(title="test api")
 
     # 헬스체킹
     @app.get("/")
     def health_check():
-        return Response(content="OK")
+        return JSONResponse(content={"status": "OK"})
 
-    app.include_router(api_route.api_router, prefix="/api/v1")
-    # app.mount(
-    #     "/logo",
-    #     StaticFiles(directory="mnt/static/company/logo_img"),
-    #     name="logo_img_root",
-    # )
+    app.include_router(api_route.router, prefix="/api/v1")
+    app.mount(
+        "/static",
+        StaticFiles(directory="mnt/static/"),
+        name="static",
+    )
 
     # 서비스로깅 자동처리 등록
     logging_handler(app)
@@ -53,4 +48,4 @@ def create_app():
 if __name__ == "__main__":
     # 설정값 로딩
     app = create_app()
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)

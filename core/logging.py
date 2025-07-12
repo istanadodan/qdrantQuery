@@ -6,7 +6,7 @@ import datetime
 # 로그출력 포맷 작성
 log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 date_format = "%Y-%m-%d %H-%M-%S"
-root_dir = Path("./logs")
+root_dir = Path("./mnt/logs")
 
 
 def setup_logging(level=logging.DEBUG) -> None:
