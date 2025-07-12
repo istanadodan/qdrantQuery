@@ -3,16 +3,16 @@ import uvicorn
 from fastapi.staticfiles import StaticFiles
 from fastapi import Request, FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
-from api.v1.mw import CreateAppContext, LogRequestMiddleware, TimeoutMonitor
-from api.v1 import api
-from api.v1.deps import get_db
+
+# from api.v1.mw import CreateAppContext, LogRequestMiddleware, TimeoutMonitor
+from api.v1 import api_route
 import datetime
 from dotenv import load_dotenv
-from settings import logger_setting
-import logging
+from core.loggings import Logger
 import os
 
 # from service.llm_search import agent
+logger = Logger.getLogger(__name__)
 
 
 def setup():
@@ -20,7 +20,7 @@ def setup():
     os.environ["NUMEXPR_MAX_THREADS"] = "8"
 
     # 로깅 설정
-    logger_setting()
+    # Logger.setup()
 
 
 def create_app():
@@ -93,7 +93,7 @@ def create_app():
                 headers=_headers,
             )
 
-    app.include_router(api.api_router, prefix="/api/v1")
+    app.include_router(api_route.api_router, prefix="/api/v1")
     app.mount(
         "/logo",
         StaticFiles(directory="mnt/static/company/logo_img"),
