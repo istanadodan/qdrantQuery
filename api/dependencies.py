@@ -1,6 +1,6 @@
 from fastapi import HTTPException, Depends, status, Request
 from fastapi.security import APIKeyHeader
-from core.database import SessionLocal
+from core.database import async_session
 from sqlalchemy.exc import SQLAlchemyError
 
 api_key_header = APIKeyHeader(name="id", auto_error=False)
@@ -16,5 +16,12 @@ def decode_auth_header(id: str = Depends(api_key_header)):
     return id
 
 
-def get_db(request: Request):
-    pass
+async def get_db():
+    db = async_session()
+    try:
+        yield db
+    except SQLAlchemyError as e:
+        db.rollback()
+        raise SQLAlchemyError(e)
+    finally:
+        db.close()

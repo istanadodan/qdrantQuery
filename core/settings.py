@@ -1,4 +1,4 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 from typing import Optional
 from pathlib import Path
 import os
@@ -8,10 +8,15 @@ PROFILE = os.environ.get("PROFILE", "dev")
 
 class Config_:
     env_file = str(Path(f"{PROFILE}.env").absolute())
+    extra = "allow"
 
 
 class DatabaseSettings(BaseSettings):
-    database_url: str
+    username: str
+    password: str
+    db_host: str
+    db_port: str
+    db_name: str
     pool_size: int = 10
     max_overflow: int = 20
     pool_timeout: int = 30
@@ -28,3 +33,6 @@ class VectorSettings(BaseSettings):
 
     class Config(Config_):
         env_prefix = "VECTOR_"
+
+
+db_setting = DatabaseSettings()

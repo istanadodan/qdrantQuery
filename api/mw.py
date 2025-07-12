@@ -4,14 +4,8 @@ import traceback
 from aiohttp import request
 from fastapi import HTTPException, status
 from fastapi.responses import JSONResponse
-from jose import JWTError
-import jwt
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 import logging
-from cmn.token_manage import TokenData
-from cmn.context import ApplicationContext
-from cmn.user_exception import TimeoutHTTPException
-
 
 REQUEST_TIMEOUT_SECOD = 10 * 60  # 타임아웃(초)
 
