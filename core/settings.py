@@ -12,7 +12,7 @@ class Config_:
 
 
 class DatabaseSettings(BaseSettings):
-    username: str
+    username1: str
     password: str
     db_host: str
     db_port: str
@@ -23,7 +23,7 @@ class DatabaseSettings(BaseSettings):
     pool_recycle: int = 3600
 
     class Config(Config_):
-        env_prefix = "DB_"
+        """env_prefix = "DB_"""
 
 
 class VectorSettings(BaseSettings):
@@ -32,7 +32,7 @@ class VectorSettings(BaseSettings):
     index_type: str = "IVF_FLAT"
 
     class Config(Config_):
-        env_prefix = "VECTOR_"
+        """env_prefix = "DB_"""
 
 
 db_setting = DatabaseSettings()

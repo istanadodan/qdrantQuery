@@ -17,11 +17,11 @@ def decode_auth_header(id: str = Depends(api_key_header)):
 
 
 async def get_db():
-    db = async_session()
+    session = async_session()
     try:
-        yield db
+        yield session
     except SQLAlchemyError as e:
-        await db.rollback()
+        await session.rollback()
         raise SQLAlchemyError(e)
     finally:
-        await db.close()
+        await session.close()

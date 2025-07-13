@@ -1,9 +1,9 @@
 # services/user_service.py
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from models.schemas.user import UserCreate, UserUpdate, User
-from managers.database_manager import db_manager
-from core.security import verify_password, get_password_hash
+from schemas.sample import UserCreate, UserUpdate, User
+from repositories.m
+anager import db_manager
 
 
 class UserService:

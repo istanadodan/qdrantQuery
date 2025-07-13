@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import (
 
 DB_URL = (
     f"mysql+asyncmy://"
-    f"{db_setting.username}:"
+    f"{db_setting.username1}:"
     f"{db_setting.password}@"
     f"{db_setting.db_host}:"
     f"{db_setting.db_port}/"
@@ -40,3 +40,42 @@ async_session: async_sessionmaker = async_sessionmaker(
 
 # Base = declarative_base()
 # Base.metadata.create_all(bind=engine)
+
+
+class AsyncSessionContext:
+    def __init__(self):
+        self.session = None
+
+    async def __aenter__(self):
+        self.session: async_sessionmaker = async_session()
+        return self.session
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.session.close()
+        self.session = None
+
+
+from functools import wraps
+
+
+def async_transactional(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        if "session" in kwargs:
+            return await func(*args, **kwargs)
+
+        else:
+            async with AsyncSessionContext() as session:
+                kwargs["session"] = session
+
+            try:
+                result = await func(*args, **kwargs)
+                await session.commit()
+
+            except Exception as e:
+                await session.rollback()
+                raise e
+
+            return result
+
+    return wrapper
