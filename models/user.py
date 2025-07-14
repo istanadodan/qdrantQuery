@@ -1,4 +1,4 @@
-from models.base_model import BaseModel
+from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, select
 from sqlalchemy.orm import mapped_column, relationship
 from passlib.hash import bcrypt
@@ -8,14 +8,14 @@ from typing import List, Optional, Union
 class User(BaseModel):
     __tablename__ = "user_tb"
 
-    user_id = mapped_column(String(32), unique=True, index=True, nullable=False)
-    username = mapped_column(String(64), nullable=False)
-    password = mapped_column(String(128), nullable=False)
+    user_id = mapped_column(Integer, primary_key=True, autoincrement=True)
+    username = mapped_column(String(255), nullable=False)
+    password = mapped_column(String(255), nullable=False)
     roles = mapped_column(String(10), nullable=False)
 
     def __init__(
         self,
-        user_id: str,
+        user_id: int,
         username: str,
         password: str,
     ):
@@ -28,7 +28,7 @@ class User(BaseModel):
 
     @staticmethod
     def of(
-        user_id: str,
+        user_id: int,
         username: str,
         password: str,
     ):

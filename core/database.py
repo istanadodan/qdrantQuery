@@ -22,6 +22,7 @@ async_engine: AsyncEngine = create_async_engine(
     pool_pre_ping=True,
     pool_recycle=3600,
     json_serializer=lambda x: json.dumps(x, ensure_ascii=False, indent=2),
+    echo=True,
 )
 async_session: async_sessionmaker = async_sessionmaker(
     autocommit=False,
@@ -30,6 +31,22 @@ async_session: async_sessionmaker = async_sessionmaker(
     class_=AsyncSession,
     future=True,
 )
+
+
+async def check_db_connection():
+    from sqlalchemy import text, select
+    from models.user import User
+
+    try:
+        async with async_engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+            await conn.execute(select(User))
+            print("DB 연결 성공!")
+    except Exception as e:
+        print("DB 연결 실패:", e)
+    finally:
+        await async_engine.dispose()
+
 
 # 동기형
 # from sqlalchemy import create_engine

@@ -11,14 +11,22 @@ logger = logging.getLogger(__name__)
 
 
 def create_app():
+    from contextlib import asynccontextmanager
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     from fastapi.staticfiles import StaticFiles
     from core.middleware import logging_handler, cors_handler
     from api.v1 import api_route
 
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        from core.database import check_db_connection
+
+        await check_db_connection()
+        yield
+
     # app설정
-    app = FastAPI(title="test api")
+    app = FastAPI(title="test api", lifespan=lifespan)
 
     # 헬스체킹
     @app.get("/")
