@@ -1,9 +1,8 @@
 # services/user_service.py
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from schemas.sample import UserCreate, UserUpdate, User
-from repositories.m
-anager import db_manager
+from schemas.user_schema import UserCreate, UserUpdate, User
+from repositories.manager import db_manager
 
 
 class UserService:

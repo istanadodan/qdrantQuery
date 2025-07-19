@@ -6,6 +6,9 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 DB_URL = (
     f"mysql+asyncmy://"
@@ -19,6 +22,7 @@ DB_URL = (
 async_engine: AsyncEngine = create_async_engine(
     url=DB_URL,
     future=True,
+    pool_size=10,
     pool_pre_ping=True,
     pool_recycle=3600,
     json_serializer=lambda x: json.dumps(x, ensure_ascii=False, indent=2),
@@ -34,14 +38,19 @@ async_session: async_sessionmaker = async_sessionmaker(
 
 
 async def check_db_connection():
+
     from sqlalchemy import text, select
     from models.user import User
 
+    logger.info(f"spool size: {async_engine.pool.size()}")
+
     try:
         async with async_engine.connect() as conn:
+
             await conn.execute(text("SELECT 1"))
-            await conn.execute(select(User))
-            print("DB 연결 성공!")
+            user = await conn.execute(select(User))
+            logger.info(user.fetchone().username)
+            logger.info("DB 연결 성공!")
     except Exception as e:
         print("DB 연결 실패:", e)
     finally:

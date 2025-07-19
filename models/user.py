@@ -6,7 +6,7 @@ from typing import List, Optional, Union
 
 
 class User(BaseModel):
-    __tablename__ = "user_tb"
+    __tablename__ = "tb_user"
 
     user_id = mapped_column(Integer, primary_key=True, autoincrement=True)
     username = mapped_column(String(255), nullable=False)

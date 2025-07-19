@@ -5,12 +5,20 @@ from api.dependencies import get_db
 from core.database import async_sessionmaker
 from sqlalchemy import select, and_
 from models import User
+from schemas.user_schema import User as UserSchema
+import logging
 
 router = APIRouter()
 
+logger = logging.getLogger(__name__)
 
-@router.get("/")
+
+@router.get("/", response_model=UserSchema)
 async def index(db: async_sessionmaker = Depends(get_db)):
-    result = await db.execute(select(User))
+    result = await db.execute(select(User).where(User.user_id == 1))
     user = result.scalar_one_or_none()
-    return JSONResponse(user)
+
+    user_schema = UserSchema.model_validate(user)
+
+    # return JSONResponse(user_schema.model_dump_json())
+    return user_schema
