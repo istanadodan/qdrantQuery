@@ -13,7 +13,7 @@
       "cwd": "${workspaceFolder}"
     },
     {
-      "name": "auto load app.py",
+      "name": "uvicorn run app.py",
       "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",

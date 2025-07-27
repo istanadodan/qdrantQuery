@@ -237,6 +237,19 @@ wheels = [
 ]
 
 [[package]]
+name = "confluent-kafka"
+version = "2.11.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4a/72/4dcfb7842f6a99fa6fd07afd8097b06040c240fd0a70e90b336bf0608156/confluent_kafka-2.11.0.tar.gz", hash = "sha256:d95512838eebd42a4657ce891dfa32bcbc06906e3391b328de24f7731b0c2755", size = 224835 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/d8/1ca8770a1a782f7ff0b66f8bc7f93cbe3a1c68d226ed13b32fe007451491/confluent_kafka-2.11.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:2f54f077904cc8541be03e16bee9bf37207c96e6bbd3c5b3d1b5fbd878e40580", size = 3585617 },
+    { url = "https://files.pythonhosted.org/packages/1d/79/53a5389d7b2775d071c87ae25e8494814ae98418d0ce4ee8acf82472ebd3/confluent_kafka-2.11.0-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:455a368d35dc4444d4d8f442b5715e3b43310b60bb0f99837556830bd32defdf", size = 3114288 },
+    { url = "https://files.pythonhosted.org/packages/74/79/667ac97c47facccae28ded35aaac9212d7a0df594f6991585b4af7a6449e/confluent_kafka-2.11.0-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:707d7a39755986605402dd308013e6a142b8a5105d51f863b17f4bc283f4ac85", size = 15365347 },
+    { url = "https://files.pythonhosted.org/packages/f1/c8/5aff13e7c85fe61c9eb3ee668f02bd405bc9c6e948d29ea2e569b388afbc/confluent_kafka-2.11.0-cp311-cp311-manylinux_2_28_x86_64.whl", hash = "sha256:655b5d3a90955dd4ee15e59d89f33b5eaae14e7122e9fecb93b4c03ef426ec97", size = 3907821 },
+    { url = "https://files.pythonhosted.org/packages/a4/a6/0f1db9ef4a5285a34a73ac411e74e7b9347d216472366a418359152b91c5/confluent_kafka-2.11.0-cp311-cp311-win_amd64.whl", hash = "sha256:6dc952c45108351b3995b85e23d99c2251a5160e3ed3d9a7768300d8c97eca56", size = 4034432 },
+]
+
+[[package]]
 name = "cryptography"
 version = "45.0.5"
 source = { registry = "https://pypi.org/simple" }
@@ -1149,6 +1162,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "aiohttp" },
     { name = "asyncmy" },
+    { name = "confluent-kafka" },
     { name = "cryptography" },
     { name = "fastapi" },
     { name = "fastembed" },
@@ -1170,6 +1184,7 @@ dependencies = [
 requires-dist = [
     { name = "aiohttp", specifier = ">=3.12.13" },
     { name = "asyncmy", specifier = ">=0.2.10" },
+    { name = "confluent-kafka", specifier = ">=2.11.0" },
     { name = "cryptography", specifier = ">=45.0.5" },
     { name = "fastapi", specifier = ">=0.116.0" },
     { name = "fastembed", specifier = ">=0.7.1" },

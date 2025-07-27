@@ -15,7 +15,7 @@ def create_app():
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
     from fastapi.staticfiles import StaticFiles
-    from core.middleware import logging_handler, cors_handler
+    from core.middleware import add_middleware
     from api.v1 import api_route
 
     @asynccontextmanager
@@ -41,10 +41,8 @@ def create_app():
     )
 
     # 서비스로깅 자동처리 등록
-    logging_handler(app)
+    add_middleware(app)
 
-    # web 설정
-    cors_handler(app)
     # db = next(get_db())
     # app.add_middleware(TimeoutMonitor, db=db)
     # app.add_middleware(CreateAppContext, db=db)

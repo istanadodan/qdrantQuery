@@ -9,8 +9,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def logging_handler(app: FastAPI):
+def add_middleware(app: FastAPI):
     app.add_middleware(LoggingMiddleware)
+    cors_handler(app)
 
 
 def cors_handler(app: FastAPI):

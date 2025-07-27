@@ -22,4 +22,5 @@ dependencies = [
     "fastembed>=0.7.1",
     "starlette-context>=0.4.0",
     "cryptography>=45.0.5",
+    "confluent-kafka>=2.11.0",
 ]
