@@ -4,7 +4,7 @@ kind: StatefulSet
 metadata:
   name: zookeeper
 spec:
-  replicas: 3
+  replicas: 1
   serviceName: zookeeper-svc
   selector:
     matchLabels:
@@ -23,8 +23,8 @@ spec:
             - sh
             - -c
             - |
-              chown -R 1000:1000 /var/lib/zookeeper/data && \
-              echo $(( $(hostname | awk -F'-' '{print $NF}')+1 )) > /var/lib/zookeeper/data/myid
+              chown -R 1000:1000 /var/lib/zookeeper/data
+              # echo $(( $(hostname | awk -F'-' '{print $NF}')+1 )) > /var/lib/zookeeper/data/myid
           volumeMounts:
             - name: zk-data
               mountPath: /var/lib/zookeeper/data

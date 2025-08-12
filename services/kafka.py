@@ -17,11 +17,17 @@ import uuid
 # 로깅 설정
 logger = logging.getLogger(__name__)
 
+bootstrap_servers = (
+    # "kafka-0.kafka-svc.default.svc.cluster.local:9092,"
+    # "kafka-1.kafka-svc.default.svc.cluster.local:9092,"
+    "127.0.0.1:9092"
+)
+
 
 class KafkaInfluenceProducer:
     """Confluent Kafka Producer 클래스"""
 
-    def __init__(self, bootstrap_servers: str = "localhost:9092", **config):
+    def __init__(self, bootstrap_servers: str = bootstrap_servers, **config):
         self.bootstrap_servers = bootstrap_servers
         self.producer = None
         self.config = {
@@ -30,7 +36,7 @@ class KafkaInfluenceProducer:
             "retries": 3,
             "batch.size": 16384,
             "linger.ms": 1,
-            "buffer.memory": 33554432,
+            "queue.buffering.max.kbytes": 33554432,
             "compression.type": "snappy",
             "enable.idempotence": True,  # 중복 방지
             **config,
@@ -211,7 +217,7 @@ class KafkaInfluenceConsumer:
         self,
         topics: List[str],
         group_id: str,
-        bootstrap_servers: str = "localhost:9092",
+        bootstrap_servers: str = bootstrap_servers,
         **config,
     ):
         self.topics = topics
@@ -228,7 +234,7 @@ class KafkaInfluenceConsumer:
             "max.poll.interval.ms": 300000,
             "session.timeout.ms": 10000,
             "fetch.min.bytes": 1,
-            "fetch.max.wait.ms": 500,
+            "fetch.wait.max.ms": 500,
             **config,
         }
         self._initialize_consumer()
@@ -277,48 +283,47 @@ class KafkaInfluenceConsumer:
                         break
 
                 # 메시지 처리
+                value = msg.value().decode("utf-8")
+                key = msg.key().decode("utf-8") if msg.key() else None
                 try:
                     value = json.loads(msg.value().decode("utf-8"))
-                    key = msg.key().decode("utf-8") if msg.key() else None
-
-                    message_data = {
-                        "topic": msg.topic(),
-                        "partition": msg.partition(),
-                        "offset": msg.offset(),
-                        "key": key,
-                        "value": value,
-                        "timestamp": (
-                            msg.timestamp()[1] if msg.timestamp()[0] != -1 else None
-                        ),
-                        "consumed_at": datetime.now().isoformat(),
-                    }
-
-                    messages.append(message_data)
-                    consumed_count += 1
-
-                    # 메시지 처리 핸들러 호출
-                    if message_handler:
-                        try:
-                            message_handler(message_data)
-                        except Exception as e:
-                            logger.error(f"메시지 핸들러 에러: {e}")
-
-                    logger.info(
-                        f"메시지 수신 - Topic: {msg.topic()}, "
-                        f"Partition: {msg.partition()}, Offset: {msg.offset()}"
-                    )
-
-                    # 오프셋 커밋
-                    self.consumer.commit(msg)
-
-                    # 최대 메시지 수 확인
-                    if max_messages and consumed_count >= max_messages:
-                        break
 
                 except json.JSONDecodeError as e:
-                    logger.error(f"JSON 파싱 에러: {e}")
-                except Exception as e:
-                    logger.error(f"메시지 처리 에러: {e}")
+                    pass
+
+                message_data = {
+                    "topic": msg.topic(),
+                    "partition": msg.partition(),
+                    "offset": msg.offset(),
+                    "key": key,
+                    "value": value,
+                    "timestamp": (
+                        msg.timestamp()[1] if msg.timestamp()[0] != -1 else None
+                    ),
+                    "consumed_at": datetime.now().isoformat(),
+                }
+
+                messages.append(message_data)
+                consumed_count += 1
+
+                # 메시지 처리 핸들러 호출
+                if message_handler:
+                    try:
+                        message_handler(message_data)
+                    except Exception as e:
+                        logger.error(f"메시지 핸들러 에러: {e}")
+
+                logger.info(
+                    f"메시지 수신 - Topic: {msg.topic()}, "
+                    f"Partition: {msg.partition()}, Offset: {msg.offset()}, data: {value}, key:{key}"
+                )
+
+                # 오프셋 커밋
+                self.consumer.commit(msg)
+
+                # 최대 메시지 수 확인
+                if max_messages and consumed_count >= max_messages:
+                    break
 
             logger.info(f"메시지 소비 완료 - 총 {consumed_count}개")
             return messages
@@ -358,7 +363,7 @@ class KafkaInfluenceConsumer:
 class KafkaInfluenceAdmin:
     """Kafka 관리 클래스"""
 
-    def __init__(self, bootstrap_servers: str = "localhost:9092"):
+    def __init__(self, bootstrap_servers: str = bootstrap_servers):
         self.admin_client = AdminClient({"bootstrap.servers": bootstrap_servers})
 
     def create_topic(
@@ -523,8 +528,8 @@ if __name__ == "__main__":
     # 각 예제 실행
     try:
         # Admin 예제
-        example_admin_usage()
-        time.sleep(1)
+        # example_admin_usage()
+        # time.sleep(1)
 
         # Producer 예제
         example_producer_usage()

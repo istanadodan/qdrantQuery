@@ -9,6 +9,8 @@ setup_logging()
 
 logger = logging.getLogger(__name__)
 
+bootstrap_servers = "localhost:9092"
+
 
 def create_app():
     from contextlib import asynccontextmanager
@@ -21,8 +23,20 @@ def create_app():
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         from core.database import check_db_connection
+        from services.kafka import KafkaInfluenceConsumer
 
         await check_db_connection()
+
+        consumer = KafkaInfluenceConsumer(
+            topics=["my-topic"],
+            group_id="test-group",
+            bootstrap_servers=bootstrap_servers,
+        )
+
+        def test_handler(t):
+            logger.info(f"consumer one {t}")
+
+        consumer.consume_messages(message_handler=test_handler)
         yield
 
     # app설정
