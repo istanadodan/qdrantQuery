@@ -17,11 +17,7 @@ import uuid
 # 로깅 설정
 logger = logging.getLogger(__name__)
 
-bootstrap_servers = (
-    # "kafka-0.kafka-svc.default.svc.cluster.local:9092,"
-    # "kafka-1.kafka-svc.default.svc.cluster.local:9092,"
-    "127.0.0.1:9092"
-)
+bootstrap_servers = "localhost:9092"
 
 
 class KafkaInfluenceProducer:
@@ -478,7 +474,7 @@ def example_admin_usage():
     admin = KafkaInfluenceAdmin()
 
     # 토픽 생성
-    admin.create_topic("test_topic", num_partitions=3, replication_factor=1)
+    admin.create_topic("user_events", num_partitions=3, replication_factor=1)
 
 
 def full_example():
@@ -532,16 +528,16 @@ if __name__ == "__main__":
         # time.sleep(1)
 
         # Producer 예제
-        example_producer_usage()
-        time.sleep(2)
+        # example_producer_usage()
+        # time.sleep(2)
 
         # Consumer 예제
-        example_consumer_usage()
-        time.sleep(2)
+        # example_consumer_usage()
+        # time.sleep(2)
 
         # 비동기 Consumer 예제
-        example_async_consumer()
-        time.sleep(2)
+        # example_async_consumer()
+        # time.sleep(2)
 
         # 전체 예제
         full_example()

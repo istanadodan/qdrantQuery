@@ -1,8 +1,15 @@
 import datetime
+import json
 from fastapi import FastAPI
 from fastapi import Request, Response, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
+import asyncio
+import time
+import traceback
+
+
 import logging
 
 
@@ -36,11 +43,17 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             "[{user_id}] {method} {url} {status} {response_time}ms - {content_length}"
         )
 
+        if request.method == "GET":
+            params = request.query_params or request.path_params
+        else:
+            params = await self._getRequestBody(request)
+
         try:
             start_time = datetime.datetime.now()
+
             response = await call_next(request)
-            end_time = datetime.datetime.now()
-            duration = (end_time - start_time).total_seconds()
+
+            duration = (datetime.datetime.now() - start_time).total_seconds()
             user_id = (
                 "unsigned_user"
                 if "user_id" not in request.headers
@@ -53,6 +66,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 "status": response.status_code,
                 "content_length": response.headers.get("content-length", "0"),
                 "response_time": f"{duration * 1000:.2f}",
+                "request_params": params,
+                "request_body": await self._getResponseBody(response),
             }
 
             logger.info(log_format.format(**data))
@@ -77,11 +92,57 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 headers=_headers,
             )
 
+    async def _getRequestBody(request: Request) -> str:
+        """_본문은 streaming으로, 값 추출후 흐름 재설정해야 함
 
-from starlette.types import ASGIApp, Message, Receive, Scope, Send
-import asyncio
-import time
-import traceback
+        :param request: Description
+        :type request: Request
+        :return: Description
+        :rtype: str
+        """
+        body = await request.body()
+        if not body:
+            return ""
+
+        decoded_body = body.decode("utf-8")
+        try:
+            json_body = json.loads(decoded_body)
+            request.state.json_body = json_body
+            return json.dumps(json_body, ensure_ascii=False)
+        except:
+            request.state.raw_body = decoded_body
+            return decoded_body
+
+    async def _getResponseBody(self, response: StreamingResponse) -> str:
+        """
+        본문은 streaming으로, 값 추출후 흐름 재설정해야 함
+
+        :param response: Description
+        :type response: Any
+        :return: Description
+        :rtype: str
+        """
+        body_content = b""
+        collected_chunks = []
+        async for chunk in response.body_iterator:
+            collected_chunks.append(
+                chunk if isinstance(chunk, bytes) else str(chunk).encode("utf-8")
+            )
+
+        response.body_iterator = self._recreate_body_iterator(collected_chunks)
+        return self._concat_and_decode(collected_chunks)
+
+    async def _recreate_body_iterator(self, chunks: list[bytes]) -> "Generator":
+        """body iterator 재생성"""
+        for chunk in chunks:
+            yield chunk
+
+    def _concat_and_decode(self, chunks: list[bytes]) -> str:
+        content_bytes = "".join(chunks)
+        try:
+            return json.dumps(content_bytes.decode("utf-8"), ensure_ascii=False)
+        except:
+            return content_bytes.decode("utf-8", errors="ignore")
 
 
 class TimeoutMonitor:
