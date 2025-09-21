@@ -39,9 +39,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         self.logger = logger_ or logger
 
     async def dispatch(self, request: Request, call_next):
-        log_format = (
-            "[{user_id}] {method} {url} {status} {response_time}ms - {content_length}"
-        )
+        log_format = "[{user_id}] {method} {url} {status} {response_time}ms - {content_length}\nrequest: {request_params}\nbody: {request_body}"
 
         if request.method == "GET":
             params = request.query_params or request.path_params

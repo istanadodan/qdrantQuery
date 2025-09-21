@@ -23,4 +23,5 @@ dependencies = [
     "starlette-context>=0.4.0",
     "cryptography>=45.0.5",
     "confluent-kafka>=2.11.0",
+    "langchain>=0.3.27",
 ]

@@ -18,6 +18,8 @@ import uuid
 logger = logging.getLogger(__name__)
 
 bootstrap_servers = "localhost:9092"
+# kubectl port-forward service/kafka-svc 9092 9092
+# localhost:9092로 forwarding하는 것을 ingress에서 지원하지 않음.
 
 
 class KafkaInfluenceProducer:

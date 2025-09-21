@@ -9,8 +9,6 @@ setup_logging()
 
 logger = logging.getLogger(__name__)
 
-bootstrap_servers = "localhost:9092"
-
 
 def create_app():
     from contextlib import asynccontextmanager
@@ -30,7 +28,6 @@ def create_app():
         consumer = KafkaInfluenceConsumer(
             topics=["my-topic"],
             group_id="test-group",
-            bootstrap_servers=bootstrap_servers,
         )
 
         def test_handler(t):

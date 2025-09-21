@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/", response_model=UserSchema)
-async def index(db: async_sessionmaker = Depends(get_db)):
+async def chat(db: async_sessionmaker = Depends(get_db)):
     result = await db.execute(select(User).where(User.user_id == 1))
     user = result.scalar_one_or_none()
 
@@ -22,8 +22,3 @@ async def index(db: async_sessionmaker = Depends(get_db)):
 
     # return JSONResponse(user_schema.model_dump_json())
     return user_schema
-
-
-@router.get("/test", response_class=Response, status_code=200)
-async def health_check():
-    return Response(content="OK", media_type="text/plain")
